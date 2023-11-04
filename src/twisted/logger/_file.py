@@ -29,10 +29,12 @@ class FileLogObserver:
             accepts text data.  Otherwise, UTF-8 L{bytes} will be used.
         @param formatEvent: A callable that formats an event.
         """
-        if ioType(outFile) is not str:
-            self._encoding: Optional[str] = "utf-8"
-        else:
-            self._encoding = None
+        self._encoding = None
+        try:
+            if ioType(outFile) is not str:
+                self._encoding: Optional[str] = "utf-8"
+        except AttributeError:
+            pass
 
         self._outFile = outFile
         self.formatEvent = formatEvent
