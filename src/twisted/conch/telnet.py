@@ -529,13 +529,16 @@ class Telnet(protocol.Protocol):
                 else:
                     appDataBuffer.append(b)
             elif self.state == "escaped":
+                option_extras = ()
+                if self.getOptionState(LINEMODE).him.state == 'yes':
+                    option_extras = (LINEMODE_EOF, LINEMODE_SUSP, LINEMODE_ABORT)
                 if b == IAC:
                     appDataBuffer.append(b)
                     self.state = "data"
                 elif b == SB:
                     self.state = "subnegotiation"
                     self.commands = []
-                elif b in (EOR, NOP, DM, BRK, IP, AO, AYT, EC, EL, GA):
+                elif b in (EOR, NOP, DM, BRK, IP, AO, AYT, EC, EL, GA, *option_extras):
                     self.state = "data"
                     if appDataBuffer:
                         self.applicationDataReceived(b"".join(appDataBuffer))
